@@ -36,4 +36,5 @@ def review():
 if __name__ == "__main__":
     if not os.getenv("GEMINI_API_KEY"):
         print("Warning: GEMINI_API_KEY not set. Create a .env file with your API key.")
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, port=port)
