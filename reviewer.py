@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-
 REVIEW_PROMPT = """You are a senior software engineer conducting a thorough code review.
 You have deep expertise in security, performance, clean architecture, complexity analysis, and language-specific best practices.
 
@@ -85,6 +83,7 @@ def review_code(code: str, filename: str, review_lang: str = "English") -> str:
     if not os.getenv("GROQ_API_KEY"):
         raise RuntimeError("GROQ_API_KEY not set. Add it to your .env file.")
 
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     ext = os.path.splitext(filename)[1].lstrip(".") or "text"
 
     prompt = REVIEW_PROMPT.format(language=ext, code=code, review_lang=review_lang)
