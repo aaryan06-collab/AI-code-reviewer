@@ -62,23 +62,67 @@
         </div>
 
         <main>
-            <div class="card drop-card">
-                <div id="drop-zone">
-                    <div class="drop-content">
-                        <div class="drop-icon-wrap">
-                            <i class="fas fa-cloud-arrow-up"></i>
+            <div class="input-tabs">
+                <button class="tab-btn active" data-tab="file">
+                    <i class="fas fa-file-code"></i> <span data-i18n="tab_file">File Upload</span>
+                </button>
+                <button class="tab-btn" data-tab="paste">
+                    <i class="fas fa-clipboard"></i> <span data-i18n="tab_paste">Paste Code</span>
+                </button>
+            </div>
+
+            <div id="tab-file" class="tab-content active">
+                <div class="card drop-card">
+                    <div id="drop-zone">
+                        <div class="drop-content">
+                            <div class="drop-icon-wrap">
+                                <i class="fas fa-cloud-arrow-up"></i>
+                            </div>
+                            <p class="drop-text" data-i18n="drop_text">Drag & drop your file here</p>
+                            <span class="drop-or" data-i18n="drop_or">or</span>
+                            <label for="file-input" class="browse-btn">
+                                <i class="fas fa-folder-open"></i> <span data-i18n="browse">Browse Files</span>
+                            </label>
+                            <input type="file" id="file-input" accept=".py,.js,.ts,.jsx,.tsx,.java,.cpp,.c,.h,.cs,.go,.rs,.rb,.php,.html,.css,.sql,.sh,.yml,.yaml,.json,.md,.swift,.kt,.scala,.r,.m,.pl,.lua,.dart,.svelte,.vue">
                         </div>
-                        <p class="drop-text" data-i18n="drop_text">Drag & drop your file here</p>
-                        <span class="drop-or" data-i18n="drop_or">or</span>
-                        <label for="file-input" class="browse-btn">
-                            <i class="fas fa-folder-open"></i> <span data-i18n="browse">Browse Files</span>
-                        </label>
-                        <input type="file" id="file-input" accept=".py,.js,.ts,.jsx,.tsx,.java,.cpp,.c,.h,.cs,.go,.rs,.rb,.php,.html,.css,.sql,.sh,.yml,.yaml,.json,.md,.swift,.kt,.scala,.r,.m,.pl,.lua,.dart,.svelte,.vue">
+                        <div id="file-info" class="file-info hidden">
+                            <i class="fas fa-file-code file-icon"></i>
+                            <span id="file-name"></span>
+                            <button id="remove-file" class="remove-btn" title="Remove"><i class="fas fa-xmark"></i></button>
+                        </div>
                     </div>
-                    <div id="file-info" class="file-info hidden">
-                        <i class="fas fa-file-code file-icon"></i>
-                        <span id="file-name"></span>
-                        <button id="remove-file" class="remove-btn" title="Remove"><i class="fas fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <div id="tab-paste" class="tab-content hidden">
+                <div class="card paste-card">
+                    <div class="paste-header">
+                        <div class="paste-filename-row">
+                            <i class="fas fa-file signature"></i>
+                            <input type="text" id="paste-filename" placeholder="filename.py" class="paste-filename-input">
+                        </div>
+                        <select id="paste-lang-select" class="paste-lang-select">
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="typescript">TypeScript</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="c">C</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="ruby">Ruby</option>
+                            <option value="php">PHP</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                            <option value="sql">SQL</option>
+                            <option value="bash">Bash</option>
+                            <option value="swift">Swift</option>
+                            <option value="kotlin">Kotlin</option>
+                        </select>
+                    </div>
+                    <textarea id="paste-code" class="paste-textarea" placeholder="# Paste your code here..." spellcheck="false"></textarea>
+                    <div class="paste-footer">
+                        <span id="paste-char-count" class="char-count">0 characters</span>
                     </div>
                 </div>
             </div>
@@ -139,27 +183,33 @@
 
     <script>
     const i18n = {
-        en: { title:"AI Code Reviewer", subtitle:"Get instant AI-powered code reviews", drop_text:"Drag & drop your file here", drop_or:"or", browse:"Browse Files", review_lang_label:"Review Language", review:"Review Code", analyzing:"Analyzing your code...", error_network:"Network error. Is the server running?", error_empty:"Please select a file first." },
-        hi: { title:"AI कोड समीक्षक", subtitle:"तुरंत AI-संचालित कोड समीक्षा प्राप्त करें", drop_text:"अपनी फ़ाइल यहाँ खींचें और छोड़ें", drop_or:"या", browse:"फ़ाइलें ब्राउज़ करें", review_lang_label:"समीक्षा भाषा", review:"कोड समीक्षा करें", analyzing:"आपके कोड का विश्लेषण हो रहा है...", error_network:"नेटवर्क त्रुटि। क्या सर्वर चल रहा है?", error_empty:"कृपया पहले एक फ़ाइल चुनें।" },
-        mr: { title:"AI कोड समीक्षक", subtitle:"त्वरित AI-शक्तीवर आधारित कोड समीक्षा मिळवा", drop_text:"तुमची फाइल येथे ड्रॅग करा आणि सोडा", drop_or:"किंवा", browse:"फाइलं ब्राउज करा", review_lang_label:"समीक्षा भाषा", review:"कोड समीक्षा करा", analyzing:"तुमच्या कोडचे विश्लेषण होत आहे...", error_network:"नेटवर्क त्रुटी. सर्वर चालू आहे का?", error_empty:"कृपया प्रथम एक फाइल निवडा." },
-        es: { title:"Revisor de Código AI", subtitle:"Obtén revisiones de código impulsadas por IA", drop_text:"Arrastra y suelta tu archivo aquí", drop_or:"o", browse:"Examinar Archivos", review_lang_label:"Idioma de Revisión", review:"Revisar Código", analyzing:"Analizando tu código...", error_network:"Error de red. ¿El servidor está funcionando?", error_empty:"Por favor selecciona un archivo primero." },
-        fr: { title:"Réviseur de Code AI", subtitle:"Obtenez des revues de code alimentées par l'IA", drop_text:"Glissez et déposez votre fichier ici", drop_or:"ou", browse:"Parcourir les Fichiers", review_lang_label:"Langue de Révision", review:"Réviser le Code", analyzing:"Analyse de votre code...", error_network:"Erreur réseau. Le serveur est-il en marche ?", error_empty:"Veuillez d'abord sélectionner un fichier." },
-        de: { title:"AI Code-Prüfer", subtitle:"Erhalte sofortige KI-gestützte Code-Reviews", drop_text:"Datei hierher ziehen und ablegen", drop_or:"oder", browse:"Dateien Durchsuchen", review_lang_label:"Prüfsprache", review:"Code Prüfen", analyzing:"Ihr Code wird analysiert...", error_network:"Netzwerkfehler. Läuft der Server?", error_empty:"Bitte wählen Sie zuerst eine Datei aus." },
-        ja: { title:"AI コードレビュアー", subtitle:"AI搭載のコードレビューを即座に取得", drop_text:"ファイルをここにドラッグ＆ドロップ", drop_or:"または", browse:"ファイルを選択", review_lang_label:"レビュー言語", review:"コードをレビュー", analyzing:"コードを分析中...", error_network:"ネットワークエラー。サーバーは稼働していますか？", error_empty:"まずファイルを選択してください。" },
-        zh: { title:"AI 代码审查器", subtitle:"获取即时 AI 驱动的代码审查", drop_text:"将文件拖放到此处", drop_or:"或", browse:"浏览文件", review_lang_label:"审查语言", review:"审查代码", analyzing:"正在分析您的代码...", error_network:"网络错误。服务器是否在运行？", error_empty:"请先选择一个文件。" },
-        pt: { title:"Revisor de Código AI", subtitle:"Obtenha revisões de código com IA", drop_text:"Arraste e solte seu arquivo aqui", drop_or:"ou", browse:"Procurar Arquivos", review_lang_label:"Idioma da Revisão", review:"Revisar Código", analyzing:"Analisando seu código...", error_network:"Erro de rede. O servidor está funcionando?", error_empty:"Por favor, selecione um arquivo primeiro." },
-        ko: { title:"AI 코드 리뷰어", subtitle:"즉시 AI 기반 코드 리뷰 받기", drop_text:"파일을 여기에 드래그 앤 드롭", drop_or:"또는", browse:"파일 찾아보기", review_lang_label:"리뷰 언어", review:"코드 리뷰", analyzing:"코드 분석 중...", error_network:"네트워크 오류. 서버가 실행 중인가요?", error_empty:"먼저 파일을 선택해 주세요." }
+        en: { title:"AI Code Reviewer", subtitle:"Get instant AI-powered code reviews", tab_file:"File Upload", tab_paste:"Paste Code", drop_text:"Drag & drop your file here", drop_or:"or", browse:"Browse Files", review_lang_label:"Review Language", review:"Review Code", analyzing:"Analyzing your code...", error_network:"Network error. Is the server running?", error_empty:"Please select a file or paste code first." },
+        hi: { title:"AI कोड समीक्षक", subtitle:"तुरंत AI-संचालित कोड समीक्षा प्राप्त करें", tab_file:"फ़ाइल अपलोड", tab_paste:"कोड पेस्ट करें", drop_text:"अपनी फ़ाइल यहाँ खींचें और छोड़ें", drop_or:"या", browse:"फ़ाइलें ब्राउज़ करें", review_lang_label:"समीक्षा भाषा", review:"कोड समीक्षा करें", analyzing:"आपके कोड का विश्लेषण हो रहा है...", error_network:"नेटवर्क त्रुटि। क्या सर्वर चल रहा है?", error_empty:"कृपया पहले फ़ाइल चुनें या कोड पेस्ट करें।" },
+        mr: { title:"AI कोड समीक्षक", subtitle:"त्वरित AI-शक्तीवर आधारित कोड समीक्षा मिळवा", tab_file:"फाइल अपलोड", tab_paste:"कोड पेस्ट करा", drop_text:"तुमची फाइल येथे ड्रॅग करा आणि सोडा", drop_or:"किंवा", browse:"फाइलं ब्राउज करा", review_lang_label:"समीक्षा भाषा", review:"कोड समीक्षा करा", analyzing:"तुमच्या कोडचे विश्लेषण होत आहे...", error_network:"नेटवर्क त्रुटी. सर्वर चालू आहे का?", error_empty:"कृपया प्रथम फाइल निवडा किंवा कोड पेस्ट करा." },
+        es: { title:"Revisor de Código AI", subtitle:"Obtén revisiones de código impulsadas por IA", tab_file:"Subir Archivo", tab_paste:"Pegar Código", drop_text:"Arrastra y suelta tu archivo aquí", drop_or:"o", browse:"Examinar Archivos", review_lang_label:"Idioma de Revisión", review:"Revisar Código", analyzing:"Analizando tu código...", error_network:"Error de red. ¿El servidor está funcionando?", error_empty:"Por favor selecciona un archivo o pega código." },
+        fr: { title:"Réviseur de Code AI", subtitle:"Obtenez des revues de code alimentées par l'IA", tab_file:"Télécharger Fichier", tab_paste:"Coller le Code", drop_text:"Glissez et déposez votre fichier ici", drop_or:"ou", browse:"Parcourir les Fichiers", review_lang_label:"Langue de Révision", review:"Réviser le Code", analyzing:"Analyse de votre code...", error_network:"Erreur réseau. Le serveur est-il en marche ?", error_empty:"Veuillez sélectionner un fichier ou coller du code." },
+        de: { title:"AI Code-Prüfer", subtitle:"Erhalte sofortige KI-gestützte Code-Reviews", tab_file:"Datei Hochladen", tab_paste:"Code Einfügen", drop_text:"Datei hierher ziehen und ablegen", drop_or:"oder", browse:"Dateien Durchsuchen", review_lang_label:"Prüfsprache", review:"Code Prüfen", analyzing:"Ihr Code wird analysiert...", error_network:"Netzwerkfehler. Läuft der Server?", error_empty:"Bitte wählen Sie eine Datei aus oder fügen Sie Code ein." },
+        ja: { title:"AI コードレビュアー", subtitle:"AI搭載のコードレビューを即座に取得", tab_file:"ファイルアップロード", tab_paste:"コードを貼り付け", drop_text:"ファイルをここにドラッグ＆ドロップ", drop_or:"または", browse:"ファイルを選択", review_lang_label:"レビュー言語", review:"コードをレビュー", analyzing:"コードを分析中...", error_network:"ネットワークエラー。サーバーは稼働していますか？", error_empty:"まずファイルを選択するか、コードを貼り付けてください。" },
+        zh: { title:"AI 代码审查器", subtitle:"获取即时 AI 驱动的代码审查", tab_file:"上传文件", tab_paste:"粘贴代码", drop_text:"将文件拖放到此处", drop_or:"或", browse:"浏览文件", review_lang_label:"审查语言", review:"审查代码", analyzing:"正在分析您的代码...", error_network:"网络错误。服务器是否在运行？", error_empty:"请选择文件或粘贴代码。" },
+        pt: { title:"Revisor de Código AI", subtitle:"Obtenha revisões de código com IA", tab_file:"Carregar Arquivo", tab_paste:"Colar Código", drop_text:"Arraste e solte seu arquivo aqui", drop_or:"ou", browse:"Procurar Arquivos", review_lang_label:"Idioma da Revisão", review:"Revisar Código", analyzing:"Analisando seu código...", error_network:"Erro de rede. O servidor está funcionando?", error_empty:"Por favor, selecione um arquivo ou cole o código." },
+        ko: { title:"AI 코드 리뷰어", subtitle:"즉시 AI 기반 코드 리뷰 받기", tab_file:"파일 업로드", tab_paste:"코드 붙여넣기", drop_text:"파일을 여기에 드래그 앤 드롭", drop_or:"또는", browse:"파일 찾아보기", review_lang_label:"리뷰 언어", review:"코드 리뷰", analyzing:"코드 분석 중...", error_network:"네트워크 오류. 서버가 실행 중인가요?", error_empty:"파일을 선택하거나 코드를 붙여넣어 주세요." }
     };
 
     let currentLang = 'en';
     let lastReviewRaw = '';
     let lastReviewFilename = '';
 
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
     const fileInfo = document.getElementById('file-info');
     const fileNameEl = document.getElementById('file-name');
     const removeFile = document.getElementById('remove-file');
+    const pasteCode = document.getElementById('paste-code');
+    const pasteFilename = document.getElementById('paste-filename');
+    const pasteLangSelect = document.getElementById('paste-lang-select');
+    const pasteCharCount = document.getElementById('paste-char-count');
     const reviewBtn = document.getElementById('review-btn');
     const reviewLang = document.getElementById('review-lang');
     const uiLang = document.getElementById('ui-lang');
@@ -177,6 +227,51 @@
     const clearHistoryBtn = document.getElementById('clear-history');
 
     let selectedFile = null;
+    let activeTab = 'file';
+
+    // Tab switching
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+            if (tab === activeTab) return;
+            activeTab = tab;
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            tabContents.forEach(tc => tc.classList.add('hidden'));
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            updateReviewBtn();
+        });
+    });
+
+    function updateReviewBtn() {
+        if (activeTab === 'file') {
+            reviewBtn.disabled = !selectedFile;
+        } else {
+            reviewBtn.disabled = !pasteCode.value.trim();
+        }
+        if (!reviewBtn.disabled) {
+            reviewBtn.classList.add('ready');
+        } else {
+            reviewBtn.classList.remove('ready');
+        }
+    }
+
+    // Paste code events
+    pasteCode.addEventListener('input', () => {
+        const len = pasteCode.value.length;
+        pasteCharCount.textContent = len.toLocaleString() + ' characters';
+        updateReviewBtn();
+    });
+
+    pasteFilename.addEventListener('input', updateReviewBtn);
+
+    // Auto-detect filename extension from language
+    pasteLangSelect.addEventListener('change', () => {
+        const extMap = { python:'.py', javascript:'.js', typescript:'.ts', java:'.java', cpp:'.cpp', c:'.c', go:'.go', rust:'.rs', ruby:'.rb', php:'.php', html:'.html', css:'.css', sql:'.sql', bash:'.sh', swift:'.swift', kotlin:'.kt' };
+        const ext = extMap[pasteLangSelect.value] || '.txt';
+        const current = pasteFilename.value.replace(/\.[^.]*$/, '');
+        pasteFilename.value = (current || 'untitled') + ext;
+    });
 
     function setLang(lang) {
         currentLang = lang;
@@ -200,8 +295,7 @@
         fileInfo.classList.remove('hidden');
         dropZone.querySelector('.drop-content').classList.add('hidden');
         dropZone.classList.add('has-file');
-        reviewBtn.disabled = false;
-        reviewBtn.classList.add('ready');
+        updateReviewBtn();
     }
 
     removeFile.addEventListener('click', (e) => {
@@ -211,8 +305,7 @@
         fileInfo.classList.add('hidden');
         dropZone.querySelector('.drop-content').classList.remove('hidden');
         dropZone.classList.remove('has-file');
-        reviewBtn.disabled = true;
-        reviewBtn.classList.remove('ready');
+        updateReviewBtn();
     });
 
     function markdownToHtml(text) {
@@ -229,27 +322,39 @@
     }
 
     reviewBtn.addEventListener('click', async () => {
-        if (!selectedFile) { errorText.textContent = i18n[currentLang].error_empty; errorDiv.classList.remove('hidden'); return; }
+        let hasInput = activeTab === 'file' ? selectedFile : pasteCode.value.trim();
+        if (!hasInput) { errorText.textContent = i18n[currentLang].error_empty; errorDiv.classList.remove('hidden'); return; }
 
         loading.classList.remove('hidden');
         errorDiv.classList.add('hidden');
         result.classList.add('hidden');
         reviewBtn.disabled = true;
 
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('review_lang', reviewLang.value);
-
         try {
-            const response = await fetch('/review', { method: 'POST', body: formData });
+            let response;
+            if (activeTab === 'file') {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('review_lang', reviewLang.value);
+                response = await fetch('/review', { method: 'POST', body: formData });
+                lastReviewFilename = selectedFile.name;
+            } else {
+                const filename = pasteFilename.value || 'untitled.py';
+                response = await fetch('/review', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: pasteCode.value, filename: filename, review_lang: reviewLang.value })
+                });
+                lastReviewFilename = filename;
+            }
+
             const data = await response.json();
             if (response.ok) {
                 lastReviewRaw = data.review;
-                lastReviewFilename = selectedFile.name;
                 reviewContent.innerHTML = markdownToHtml(data.review);
                 result.classList.remove('hidden');
                 setTimeout(() => result.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-                if (saveHistoryCheck.checked) saveToHistory(selectedFile.name, data.review, reviewLang.value);
+                if (saveHistoryCheck.checked) saveToHistory(lastReviewFilename, data.review, reviewLang.value);
             } else {
                 errorText.textContent = data.error;
                 errorDiv.classList.remove('hidden');
@@ -260,6 +365,7 @@
         } finally {
             loading.classList.add('hidden');
             reviewBtn.disabled = false;
+            updateReviewBtn();
         }
     });
 
