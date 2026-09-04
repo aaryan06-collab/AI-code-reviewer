@@ -1,8 +1,11 @@
 import os
+import logging
 from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 REVIEW_PROMPT = """You are a senior software engineer conducting a thorough code review.
 You have deep expertise in security, performance, clean architecture, complexity analysis, and language-specific best practices.
@@ -80,17 +83,25 @@ def review_code(code: str, filename: str, review_lang: str = "English") -> str:
     if not code.strip():
         return "Error: File is empty."
 
-    if not os.getenv("GROQ_API_KEY"):
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
         raise RuntimeError("GROQ_API_KEY not set. Add it to your .env file.")
 
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    logger.info(f"Initializing Groq client, model=openai/gpt-oss-120b")
+    client = Groq(api_key=api_key)
     ext = os.path.splitext(filename)[1].lstrip(".") or "text"
 
     prompt = REVIEW_PROMPT.format(language=ext, code=code, review_lang=review_lang)
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-120b",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.3,
-        max_tokens=4000,
-    )
-    return response.choices[0].message.content
+    logger.info(f"Sending request to Groq API, prompt_length={len(prompt)}")
+    try:
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=4000,
+        )
+        logger.info("Groq API response received successfully")
+        return response.choices[0].message.content
+    except Exception as e:
+        logger.error(f"Groq API error: {type(e).__name__}: {e}")
+        raise

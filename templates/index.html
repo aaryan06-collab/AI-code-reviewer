@@ -348,19 +348,27 @@
                 lastReviewFilename = filename;
             }
 
-            const data = await response.json();
-            if (response.ok) {
+            let data;
+            try {
+                data = await response.json();
+            } catch (parseErr) {
+                errorText.textContent = 'Server returned an invalid response. It may have crashed.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (response.ok && data.review) {
                 lastReviewRaw = data.review;
                 reviewContent.innerHTML = markdownToHtml(data.review);
                 result.classList.remove('hidden');
                 setTimeout(() => result.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
                 if (saveHistoryCheck.checked) saveToHistory(lastReviewFilename, data.review, reviewLang.value);
             } else {
-                errorText.textContent = data.error;
+                errorText.textContent = data.error || 'Unknown error occurred.';
                 errorDiv.classList.remove('hidden');
             }
         } catch (err) {
-            errorText.textContent = i18n[currentLang].error_network;
+            errorText.textContent = i18n[currentLang].error_network + ' (' + err.message + ')';
             errorDiv.classList.remove('hidden');
         } finally {
             loading.classList.add('hidden');
